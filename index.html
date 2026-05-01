@@ -1,66 +1,14 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <!-- السطر التالي يحل مشكلة أبعاد الشاشة ويمنع الحاجة لتدوير الجوال -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Denis Protokoll</title>
-    <link rel="icon" href="icon.png.PNG">
-    <link rel="apple-touch-icon" href="icon.png.PNG">
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f4f4f4; }
-        .container { width: 100%; max-width: 100%; overflow-x: hidden; }
-        h2 { font-size: 1.2rem; text-align: center; color: #333; }
-        table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; table-layout: fixed; }
-        th, td { border: 1px solid #ddd; padding: 5px 2px; text-align: center; overflow: hidden; }
-        th { background-color: #333; color: white; }
-        /* تحديد عرض الأعمدة ليناسب شاشة الجوال */
-        th:nth-child(1), td:nth-child(1) { width: 25%; } /* Zeit */
-        th:nth-child(2), td:nth-child(2) { width: 35%; } /* Ort */
-        th:nth-child(3), td:nth-child(3) { width: 40%; } /* Ereignis */
-        input, select { width: 100%; padding: 5px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
-        .btn-container { margin-top: 15px; display: flex; gap: 5px; }
-        button { padding: 12px; border: none; border-radius: 5px; cursor: pointer; flex: 1; font-weight: bold; }
-        .add-btn { background-color: #28a745; color: white; }
-        .print-btn { background-color: #007bff; color: white; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h2>Denis Protokoll</h2>
-    <table id="protocolTable">
-        <thead>
-            <tr>
-                <th>Zeit</th>
-                <th>Ort</th>
-                <th>Ereignis</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><input type="time"></td>
-                <td><input type="text" placeholder="Ort"></td>
-                <td>
-                    <select>
-                        <option value="Kontrolle">Kontrolle</option>
-                        <option value="Rundgang">Rundgang</option>
-                        <option value="Vorkommnis">Vorkommnis</option>
-                    </select>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="btn-container">
-        <button class="add-btn" onclick="addRow()">+ Zeile</button>
-        <button class="print-btn" onclick="window.print()">PDF / Drucken</button>
-    </div>
-</div>
-<script>
-    function addRow() {
-        let table = document.getElementById("protocolTable").getElementsByTagName('tbody')[0];
-        let newRow = table.insertRow();
-        newRow.innerHTML = `<td><input type="time"></td><td><input type="text" placeholder="Ort"></td><td><select><option value="Kontrolle">Kontrolle</option><option value="Rundgang">Rundgang</option><option value="Vorkommnis">Vorkommnis</option></select></td>`;
-    }
-</script>
-</body>
-</html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- App Icon -->
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#E8394A">
+
+<title>Denis Protokoll</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
