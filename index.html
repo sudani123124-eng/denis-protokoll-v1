@@ -1,578 +1,66 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Denis Protokoll</title>
-<link rel="icon" href="icon.png.PNG">
-<link rel="apple-touch-icon" href="icon.png.PNG">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --red: #E8394A; --red2: #ff6b7a; --green: #4cba6b;
-  --bg: #f5f0eb; --card: #ffffff; --border: #E2E5EC;
-  --text: #141518; --muted: #8890A0; --row-hover: #fff8f8;
-}
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg); min-height: 100vh;
-  padding: 24px 16px 60px;
-  -webkit-print-color-adjust: exact; print-color-adjust: exact;
-}
-body::before {
-  content:''; position:fixed; inset:0;
-  background-image: radial-gradient(circle at 1px 1px, #d4cdc6 1px, transparent 0);
-  background-size: 28px 28px; opacity: 0.5;
-  pointer-events: none; z-index: 0;
-}
-
-.toolbar { position: relative; z-index: 2; max-width: 900px; margin: 0 auto 18px; display: flex; align-items: center; justify-content: space-between; }
-.toolbar-brand { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
-.toolbar-brand span { color: var(--red); }
-.toolbar-right { display: flex; gap: 8px; }
-.btn { padding: 9px 20px; border-radius: 10px; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s; }
-.btn-red { background: var(--red); color: white; box-shadow: 0 4px 12px rgba(232,57,74,0.35); }
-.btn-red:hover { background: #c8102e; transform: translateY(-1px); }
-.btn-ghost { background: white; color: #555; border: 1.5px solid var(--border); }
-.btn-ghost:hover { background: #f8f8f8; }
-
-.card { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; background: var(--card); border-radius: 24px; box-shadow: 0 2px 0 #d0d4dc, 0 8px 40px rgba(0,0,0,0.09); overflow: hidden; }
-
-.card-header { background: linear-gradient(135deg, #4a6080 0%, #3d5268 100%); padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.header-left { display: flex; flex-direction: column; gap: 1px; }
-.header-eyebrow { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,200,200,0.85); margin-bottom: 1px; }
-.header-title { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 800; color: white; line-height: 1; }
-.header-title span { color: #ffb3b9; }
-.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-.header-meta-fields { display: flex; gap: 7px; }
-.header-selects { display: flex; align-items: center; gap: 7px; }
-
-.meta-field { display: flex; flex-direction: column; gap: 2px; }
-.meta-field-label { font-size: 7px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); }
-.meta-field-input { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; color: white; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.18); border-radius: 7px; padding: 4px 8px; outline: none; width: 120px; transition: border-color 0.2s; }
-.meta-field-input::placeholder { color: rgba(255,255,255,0.3); }
-.meta-field-input:focus { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); }
-
-.proto-refresh { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 6px; color: white; font-size: 12px; font-weight: 700; width: 26px; height: 26px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.proto-refresh:hover { background: rgba(255,255,255,0.25); transform: rotate(180deg); }
-
-.day-select { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: white; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 4px 8px; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; }
-.date-input { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 4px 8px; outline: none; cursor: pointer; }
-
-.status-badge { display: flex; align-items: center; gap: 5px; background: rgba(76,186,107,0.12); border: 1px solid rgba(76,186,107,0.3); border-radius: 20px; padding: 4px 9px; font-size: 10px; font-weight: 700; color: #4cba6b; cursor: pointer; transition: all 0.2s; user-select: none; }
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4cba6b; animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-.status-badge.incident { background: rgba(232,57,74,0.12); border-color: rgba(232,57,74,0.3); color: var(--red); }
-.status-badge.incident .status-dot { background: var(--red); }
-
-.progress-wrap { margin-top: 8px; display: flex; align-items: center; gap: 8px; }
-.progress-label { font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.45); white-space: nowrap; }
-.progress-track { flex: 1; height: 3px; border-radius: 99px; background: rgba(255,255,255,0.12); overflow: hidden; min-width: 60px; }
-.progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #ffb3b9, var(--red)); transition: width 1s linear; }
-.progress-time { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.6); white-space: nowrap; }
-.live-clock { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.5); letter-spacing: 1px; margin-top: 2px; }
-
-.col-headers { display: grid; grid-template-columns: 120px 70px 70px 1fr; gap: 6px; padding: 8px 14px 6px; }
-.col-tag { border-radius: 6px; padding: 4px 0; font-size: 10px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
-.tag-kunde  { background: #F0F1F4; color: #666; }
-.tag-beginn { background: #d4f5dc; color: #1a6630; }
-.tag-ende   { background: #fde8c4; color: #7a4800; }
-.tag-notiz  { background: #fde0e0; color: #8b1a1a; }
-
-.rows-wrap { display: flex; flex-direction: column; gap: 0; padding: 0 14px 6px; }
-
-.proto-row { display: grid; grid-template-columns: 120px 70px 70px 1fr; gap: 6px; align-items: start; padding: 4px 0; border-bottom: 1px solid var(--border); border-left: 3px solid transparent; transition: border-left-color 0.3s, background 0.15s; animation: rowIn 0.22s ease both; position: relative; }
-.proto-row:last-child { border-bottom: none; }
-.proto-row.row-ok    { border-left-color: #4cba6b; }
-.proto-row.row-warn  { border-left-color: #f5a623; }
-.proto-row.row-empty { border-left-color: #e0e0e0; }
-.proto-row:hover { background: var(--row-hover); border-radius: 10px; }
-.proto-row::before { content:''; position:absolute; left:-20px; top:6px; bottom:6px; width:3px; border-radius:2px; background:var(--red); opacity:0; transition:opacity 0.2s; }
-.proto-row:hover::before { opacity:1; }
-@keyframes rowIn { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:none;} }
-
-.cell { border: 1.5px solid var(--border); border-radius: 10px; background: white; display: flex; align-items: center; justify-content: center; padding: 5px; min-height: 46px; overflow: visible; transition: border-color 0.15s, box-shadow 0.15s; }
-.cell:focus-within { border-color: var(--red); box-shadow: 0 0 0 3px rgba(232,57,74,0.08); }
-.cell-notiz { align-items: flex-start; flex-direction: column; gap: 4px; padding: 6px 8px; height: auto; min-height: 46px; overflow: visible; }
-
-.cell-kunde { flex-direction: column; gap: 1px; padding: 4px 8px; justify-content: center; }
-.row-num { font-size: 8px; font-weight: 700; color: var(--muted); letter-spacing: 1px; align-self: flex-start; }
-.cell-kunde select { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; font-style: italic; color: var(--text); border: none; background: transparent; outline: none; cursor: pointer; width: 100%; text-align: center; appearance: none; -webkit-appearance: none; margin: auto 0; }
-
-.cell-time { flex-direction: column; gap: 3px; position: relative; padding: 4px; }
-.time-input-direct { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--text); border: 1.5px solid var(--border); border-radius: 7px; padding: 3px 4px; background: #fafafa; outline: none; width: 100%; text-align: center; cursor: pointer; transition: border-color 0.15s; }
-.time-input-direct:focus { border-color: var(--red); background: white; }
-.time-input-direct.t-night { color: #7c6fcd; border-color: #c4b8ff; background: #f5f3ff; }
-.time-input-direct.t-day   { color: #1a6630; border-color: #81c784; background: #f0faf2; }
-.time-input-direct.t-eve   { color: #b45309; border-color: #f5a623; background: #fffbf0; }
-.time-now-btn { font-size: 9px; font-weight: 700; color: var(--muted); background: none; border: 1px dashed var(--border); border-radius: 5px; padding: 2px 5px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-.time-now-btn:hover { border-color: var(--red); color: var(--red); }
-
-.kunde-custom { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; font-style: italic; color: var(--text); border: none; background: transparent; outline: none; width: 100%; text-align: center; padding: 0; margin-top: 2px; }
-.kunde-back { font-size: 10px; color: var(--muted); cursor: pointer; margin-top: 2px; display: block; text-align: center; transition: color 0.15s; }
-.kunde-back:hover { color: var(--red); }
-
-.notiz-items { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-.notiz-item { display: flex; align-items: center; gap: 4px; animation: rowIn 0.18s ease both; width: 100%; }
-.notiz-select { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--text); border: 1.5px solid var(--border); border-radius: 7px; padding: 3px 6px; background: #fafafa; outline: none; cursor: pointer; flex: 1; min-width: 0; transition: border-color 0.15s; }
-.notiz-select:focus { border-color: var(--red); }
-
-.nc-wrap { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
-.nc-btn { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border); background: white; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s; color: #666; line-height: 1; }
-.nc-btn.p { border-color: var(--red); color: var(--red); }
-.nc-btn.p:hover { background: var(--red); color: white; }
-.nc-btn.m:hover { background: #eee; }
-.nc-num { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800; min-width: 14px; text-align: center; color: var(--text); }
-
-.notiz-del-btn { background: #fff0f1; border: 1.5px solid #f5c0c4; border-radius: 6px; color: var(--red); font-size: 12px; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.notiz-del-btn:hover { background: var(--red); color: white; border-color: var(--red); transform: scale(1.1); }
-
-.notiz-free { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500; color: var(--text); border: 1.5px solid var(--border); border-radius: 7px; padding: 4px 7px; background: #fafafa; outline: none; width: 100%; resize: none; min-height: 32px; transition: border-color 0.15s; }
-.notiz-free:focus { border-color: var(--red); background: white; }
-
-.bottom-actions { display: flex; gap: 4px; margin-top: 2px; flex-wrap: wrap; }
-.tiny-btn { font-size: 9px; font-weight: 700; color: var(--muted); background: none; border: 1.5px dashed var(--border); border-radius: 6px; padding: 2px 7px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-.tiny-btn:hover { border-color: var(--red); color: var(--red); background: rgba(232,57,74,0.04); }
-
-.foto-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; width: 100%; }
-.foto-thumb { width: 40px; height: 34px; border-radius: 7px; object-fit: cover; border: 1.5px solid var(--border); cursor: zoom-in; transition: transform 0.15s; flex-shrink: 0; }
-.foto-thumb:hover { transform: scale(1.06); }
-
-.add-zone { padding: 10px 16px; display: flex; justify-content: center; align-items: center; gap: 12px; }
-.add-row-btn2 { background: var(--red); color: white; border: none; border-radius: 9px; padding: 8px 20px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 3px 10px rgba(232,57,74,0.25); }
-.add-row-btn2:hover { background: #c8102e; transform: translateY(-1px); }
-.rm-row-btn { background: white; color: #888; border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 20px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
-.rm-row-btn:hover { border-color: #e88; color: #e44; background: #fff5f5; }
-
-.card-footer { background: #f8f9fc; border-top: 1.5px solid var(--border); padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip { background: white; border: 1.5px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 10px; font-weight: 700; color: #555; display: flex; align-items: center; gap: 4px; }
-.chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); }
-.footer-brand { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #c8ccd6; }
-.footer-brand span { color: var(--red); }
-
-@media print {
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body { background: white !important; padding: 0 !important; margin: 0; }
-  body::before { display: none !important; }
-  .toolbar, .add-zone, .no-print, .time-now-btn, .bottom-actions, .kunde-back, .progress-wrap, .live-clock { display: none !important; }
-  .card { box-shadow: none !important; border-radius: 0 !important; width: 100% !important; max-width: 100% !important; }
-  .card-header { padding: 8px 14px !important; }
-  .header-title { font-size: 16px !important; }
-  .meta-field-input, .day-select, .date-input { font-size: 9px !important; padding: 2px 5px !important; border: none !important; background: transparent !important; color: white !important; }
-  .status-badge { padding: 2px 7px !important; font-size: 8px !important; }
-  .col-headers { padding: 6px 12px 4px !important; gap: 4px !important; }
-  .col-tag { padding: 2px 0 !important; font-size: 8px !important; }
-  .rows-wrap { padding: 0 12px 4px !important; }
-  .proto-row { gap: 4px !important; padding: 2px 0 !important; }
-  .proto-row::before { display: none !important; }
-  .cell { min-height: 34px !important; padding: 3px 5px !important; border-radius: 6px !important; border-width: 1px !important; }
-  .cell-kunde select, .kunde-custom { font-size: 10px !important; }
-  .row-num { font-size: 7px !important; }
-  .time-input-direct { border: none !important; background: transparent !important; font-size: 11px !important; padding: 0 !important; font-weight: 700 !important; color: #141518 !important; }
-  .notiz-select { font-size: 9px !important; padding: 1px 3px !important; border-radius: 4px !important; }
-  .nc-btn, .notiz-del-btn { display: none !important; }
-  .nc-num { font-size: 10px !important; font-weight: 800 !important; border: 1px solid #ccc !important; border-radius: 4px !important; padding: 1px 4px !important; }
-  .notiz-item { gap: 3px !important; }
-  .notiz-free { font-size: 8px !important; min-height: 20px !important; padding: 2px 4px !important; }
-  .foto-thumb { width: 28px !important; height: 24px !important; }
-  .card-footer { padding: 5px 14px !important; }
-  .chip { padding: 1px 7px !important; font-size: 8px !important; }
-  @page { size: A4 portrait; margin: 8mm; }
-}
-</style>
+    <meta charset="UTF-8">
+    <!-- السطر التالي يحل مشكلة أبعاد الشاشة ويمنع الحاجة لتدوير الجوال -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Denis Protokoll</title>
+    <link rel="icon" href="icon.png.PNG">
+    <link rel="apple-touch-icon" href="icon.png.PNG">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f4f4f4; }
+        .container { width: 100%; max-width: 100%; overflow-x: hidden; }
+        h2 { font-size: 1.2rem; text-align: center; color: #333; }
+        table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 5px 2px; text-align: center; overflow: hidden; }
+        th { background-color: #333; color: white; }
+        /* تحديد عرض الأعمدة ليناسب شاشة الجوال */
+        th:nth-child(1), td:nth-child(1) { width: 25%; } /* Zeit */
+        th:nth-child(2), td:nth-child(2) { width: 35%; } /* Ort */
+        th:nth-child(3), td:nth-child(3) { width: 40%; } /* Ereignis */
+        input, select { width: 100%; padding: 5px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 12px; }
+        .btn-container { margin-top: 15px; display: flex; gap: 5px; }
+        button { padding: 12px; border: none; border-radius: 5px; cursor: pointer; flex: 1; font-weight: bold; }
+        .add-btn { background-color: #28a745; color: white; }
+        .print-btn { background-color: #007bff; color: white; }
+    </style>
 </head>
 <body>
-
-<div class="toolbar no-print">
-  <div class="toolbar-brand">Denis <span>Protokoll</span> · Sicherheitsdienst</div>
-  <div class="toolbar-right">
-    <button class="btn btn-ghost" onclick="resetForm()">↺ Reset</button>
-    <button class="btn btn-red" onclick="window.print()">🖨 PDF / Drucken</button>
-  </div>
+<div class="container">
+    <h2>Denis Protokoll</h2>
+    <table id="protocolTable">
+        <thead>
+            <tr>
+                <th>Zeit</th>
+                <th>Ort</th>
+                <th>Ereignis</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="time"></td>
+                <td><input type="text" placeholder="Ort"></td>
+                <td>
+                    <select>
+                        <option value="Kontrolle">Kontrolle</option>
+                        <option value="Rundgang">Rundgang</option>
+                        <option value="Vorkommnis">Vorkommnis</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="btn-container">
+        <button class="add-btn" onclick="addRow()">+ Zeile</button>
+        <button class="print-btn" onclick="window.print()">PDF / Drucken</button>
+    </div>
 </div>
-
-<div class="card">
-  <div class="card-header">
-    <div class="header-left">
-      <div class="header-eyebrow">Tagesbericht · Vorfallprotokoll</div>
-      <div class="header-title">Denis <span>Protokoll</span></div>
-      <div class="live-clock no-print" id="liveClock">00:00:00</div>
-      <div class="progress-wrap no-print">
-        <span class="progress-label">19:45 → 07:00</span>
-        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-        <span class="progress-time" id="progressPct">0%</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="header-meta-fields">
-        <div class="meta-field">
-          <span class="meta-field-label">Protokoll-Nr.</span>
-          <div style="display:flex;gap:5px;align-items:center;">
-            <input class="meta-field-input" type="text" id="protokollNr" placeholder="wird generiert…" style="width:150px;">
-            <button class="proto-refresh no-print" onclick="refreshProtoNr()" title="Neue Nummer">↺</button>
-          </div>
-        </div>
-        <div class="meta-field">
-          <span class="meta-field-label">Mitarbeiter</span>
-          <input class="meta-field-input" type="text" id="mitarbeiterName" placeholder="Vorname Nachname">
-        </div>
-      </div>
-      <div class="header-selects">
-        <select class="day-select" id="daySelect">
-          <option>Montag</option><option>Dienstag</option><option>Mittwoch</option>
-          <option>Donnerstag</option><option>Freitag</option><option>Samstag</option><option>Sonntag</option>
-        </select>
-        <input class="date-input" type="date" id="dateInput">
-        <div class="status-badge" id="statusBadge" onclick="toggleStatus()">
-          <span class="status-dot"></span><span id="statusText">Regulär</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-headers">
-    <div class="col-tag tag-kunde">Kunde</div>
-    <div class="col-tag tag-beginn">Beginn</div>
-    <div class="col-tag tag-ende">Ende</div>
-    <div class="col-tag tag-notiz">Dienstnotiz</div>
-  </div>
-
-  <div class="rows-wrap" id="rowsWrap"></div>
-
-  <div class="add-zone no-print">
-    <button class="rm-row-btn" onclick="removeLastRow()">− Zeile</button>
-    <span id="rowCount" style="font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:var(--muted);min-width:55px;text-align:center;">0 Zeilen</span>
-    <button class="add-row-btn2" onclick="addRow()">＋ Zeile</button>
-  </div>
-
-  <div class="card-footer">
-    <div class="chips">
-      <div class="chip"><span class="chip-dot"></span><span id="chipK">0 Kunden</span></div>
-      <div class="chip"><span class="chip-dot"></span><span id="chipV">0 Vorfälle</span></div>
-      <div class="chip"><span class="chip-dot"></span><span id="chipR">0 Zeilen</span></div>
-    </div>
-    <div class="footer-brand">Denis <span>Protokoll</span></div>
-  </div>
-</div>
-
 <script>
-const KUNDEN = ['— Standort —','Galerie','Lüneburg Parkhaus','Fuhle','Parking Millerntorplatz','Parkhaus My Falkenried'];
-const EREIGNISSE = [
-  '— Ereignis —',
-  'Obdachlose nach draußen gebracht',
-  'Polizei eingetroffen – Obdachlose Person entfernt',
-  'Polizei eingetroffen – Personalien aufgenommen',
-  'Fahrzeuge herausgelassen',
-  'Fahrzeug unberechtigt geparkt – Abschlepper verständigt',
-  'Unbefugte Person entfernt',
-  'Vandalismus gemeldet – Polizei informiert',
-  'Sachschaden festgestellt – Dokumentiert',
-  'Fahrzeugschaden festgestellt',
-  'Parkverstoß dokumentiert',
-  'Notruf / Notfall gemeldet',
-  'Rettungsdienst angefordert',
-  'Technischer Defekt gemeldet',
-  'Streit geschlichtet',
-  'Ruhestörung – Personen verwiesen',
-  'Diebstahl gemeldet – Polizei verständigt',
-  'Freitext…'
-];
-
-const today = new Date();
-document.getElementById('dateInput').value = today.toISOString().split('T')[0];
-const DAYS = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
-document.getElementById('daySelect').value = DAYS[today.getDay()];
-
-function generateProtoNr(increment = true) {
-  const d = today;
-  const dateKey = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-  const datePrefix = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
-  const storedKey = localStorage.getItem('denis_proto_date');
-  let counter = 1;
-  if (storedKey === dateKey && increment) counter = parseInt(localStorage.getItem('denis_proto_seq') || '0') + 1;
-  else if (storedKey === dateKey && !increment) counter = parseInt(localStorage.getItem('denis_proto_seq') || '1');
-  if (increment) { localStorage.setItem('denis_proto_date', dateKey); localStorage.setItem('denis_proto_seq', counter); }
-  return `${datePrefix} – Nr. ${String(counter).padStart(3,'0')}`;
-}
-
-function refreshProtoNr() {
-  const pNr = document.getElementById('protokollNr');
-  if (pNr) pNr.value = generateProtoNr(true);
-  saveData();
-}
-
-let rowId = 0;
-const nCounts = {};
-let statusOk = true;
-
-function toggleStatus() {
-  statusOk = !statusOk;
-  document.getElementById('statusBadge').className = 'status-badge' + (statusOk ? '' : ' incident');
-  document.getElementById('statusText').textContent = statusOk ? 'Regulär' : 'Vorfall aktiv';
-}
-
-const INIT = [
-  { k:'Lüneburg Parkhaus', b:'17:57', e:'19:13', n:[{ev:'Obdachlose nach draußen gebracht',c:1}] },
-  { k:'Galerie',           b:'21:00', e:'21:35', n:[{ev:'Obdachlose nach draußen gebracht',c:1},{ev:'Fahrzeuge herausgelassen',c:1}] },
-  { k:'Fuhle',             b:'21:51', e:'21:15', n:[] },
-  { k:'Galerie',           b:'23:50', e:'00:00', n:[] },
-  { k:'Fuhle',             b:'00:15', e:'01:00', n:[] },
-  { k:'Galerie',           b:'01:30', e:'03:00', n:[{ev:'Obdachlose nach draußen gebracht',c:2}] },
-  { k:'Galerie',           b:'05:42', e:'06:00', n:[] },
-  { k:'Lüneburg Parkhaus', b:'06:35', e:'07:00', n:[] },
-];
-
-function addRow(data) {
-  const id = ++rowId;
-  nCounts[id] = [];
-  const k  = data?.k || '— Standort —';
-  const bv = data?.b || '00:00';
-  const ev = data?.e || '00:00';
-  const isCustom = !KUNDEN.includes(k) && k !== '— Standort —';
-  const div = document.createElement('div');
-  div.className = 'proto-row'; div.id = `row-${id}`;
-  div.innerHTML = `
-    <div class="cell cell-kunde">
-      <span class="row-num">#${String(id).padStart(2,'0')}</span>
-      <select id="ksel-${id}" onchange="onKundeChange(this,${id})" style="display:${isCustom?'none':'block'}">
-        ${KUNDEN.map(x=>`<option${x===k?' selected':''}>${x}</option>`).join('')}
-        <option value="__custom__">✏️ Eigener Name…</option>
-      </select>
-      <input class="kunde-custom" id="kcust-${id}" type="text" value="${isCustom?k:''}" style="display:${isCustom?'block':'none'}" oninput="updateSummary()">
-      <span class="kunde-back no-print" id="kback-${id}" style="display:${isCustom?'inline':'none'}" onclick="resetKunde(${id})">↩</span>
-    </div>
-    <div class="cell cell-time">
-      <input class="time-input-direct" id="bd-${id}" type="time" value="${bv}" oninput="colorTime(this)">
-      <button class="time-now-btn no-print" onclick="setNow('bd-${id}')">⏱ Jetzt</button>
-    </div>
-    <div class="cell cell-time">
-      <input class="time-input-direct" id="ed-${id}" type="time" value="${ev}" oninput="colorTime(this)">
-      <button class="time-now-btn no-print" onclick="setNow('ed-${id}')">⏱ Jetzt</button>
-    </div>
-    <div class="cell cell-notiz">
-      <div class="notiz-items" id="ni-${id}"></div>
-      <div class="foto-row" id="fr-${id}"></div>
-      <div class="bottom-actions">
-        <button class="tiny-btn" onclick="addNotiz(${id})">＋ Ereignis</button>
-        <button class="tiny-btn" onclick="document.getElementById('fi-${id}').click()">📎 Foto</button>
-        <button class="tiny-btn" style="color:#e88;" onclick="removeRow(${id})">✕ Zeile</button>
-        <input type="file" id="fi-${id}" accept="image/*" style="display:none" onchange="addFoto(${id},this)">
-      </div>
-    </div>
-  `;
-  document.getElementById('rowsWrap').appendChild(div);
-  if (data?.n) data.n.forEach(n => addNotiz(id, n.ev, n.c, n.ft||''));
-  setTimeout(()=>{
-    const bd = document.getElementById(`bd-${id}`);
-    const ed = document.getElementById(`ed-${id}`);
-    if (bd) colorTime(bd); if (ed) colorTime(ed);
-  }, 0);
-  updateSummary();
-}
-
-function removeLastRow() {
-  const rows = document.querySelectorAll('.proto-row');
-  if (!rows.length) return;
-  const last = rows[rows.length-1];
-  last.style.cssText += 'opacity:0;transform:translateX(20px);transition:all 0.2s';
-  setTimeout(()=>{ last.remove(); updateSummary(); }, 200);
-}
-
-function removeRow(id) {
-  const el = document.getElementById(`row-${id}`);
-  if (el) { el.style.cssText += 'opacity:0;transform:translateX(20px);transition:all 0.2s'; setTimeout(()=>{ el.remove(); updateSummary(); }, 200); }
-}
-
-function addNotiz(rId, ereignis, count, freeText) {
-  const ni = document.getElementById(`ni-${rId}`);
-  const idx = nCounts[rId].length;
-  nCounts[rId].push(count||0);
-  const isFree = ereignis === 'Freitext…';
-  const item = document.createElement('div');
-  item.className = 'notiz-item'; item.id = `ni-${rId}-${idx}`;
-  item.innerHTML = `
-    <div class="nc-wrap">
-      <button class="nc-btn m" onclick="chN(${rId},${idx},-1)">−</button>
-      <span class="nc-num" id="nc-${rId}-${idx}">${count||0}</span>
-      <button class="nc-btn p" onclick="chN(${rId},${idx},+1)">+</button>
-    </div>
-    <select class="notiz-select" onchange="onNChange(this,${rId},${idx})">
-      ${EREIGNISSE.map(e=>`<option${e===(ereignis||'— Ereignis —')?' selected':''}>${e}</option>`).join('')}
-    </select>
-    <button class="notiz-del-btn no-print" title="Löschen" onclick="deleteNotiz(this)">🗑</button>
-  `;
-  ni.appendChild(item);
-  const ta = document.createElement('textarea');
-  ta.className = 'notiz-free'; ta.value = freeText||'';
-  ta.style.display = isFree ? 'block' : 'none';
-  ni.appendChild(ta);
-  updateSummary();
-}
-
-function deleteNotiz(btn) {
-  const item = btn.closest('.notiz-item');
-  const next = item.nextElementSibling;
-  if (next && next.tagName === 'TEXTAREA') next.remove();
-  item.style.opacity = '0'; item.style.transform = 'translateX(10px)'; item.style.transition = 'all 0.18s';
-  setTimeout(() => { item.remove(); updateSummary(); }, 180);
-}
-
-function onNChange(sel, rId, idx) {
-  const ta = document.getElementById(`ni-${rId}-${idx}`)?.nextElementSibling;
-  if (ta && ta.tagName==='TEXTAREA') ta.style.display = sel.value==='Freitext…' ? 'block' : 'none';
-  updateSummary();
-}
-
-function chN(rId, idx, d) {
-  nCounts[rId][idx] = Math.max(0, (nCounts[rId][idx]||0)+d);
-  document.getElementById(`nc-${rId}-${idx}`).textContent = nCounts[rId][idx];
-  updateSummary();
-}
-
-function onKundeChange(sel, id) {
-  const cust = document.getElementById(`kcust-${id}`);
-  const back = document.getElementById(`kback-${id}`);
-  if (sel.value === '__custom__') {
-    sel.style.display = 'none'; cust.style.display = 'block'; back.style.display = 'inline'; cust.focus();
-  } else { cust.style.display = 'none'; back.style.display = 'none'; sel.style.display = 'block'; }
-  updateSummary();
-}
-
-function resetKunde(id) {
-  document.getElementById(`ksel-${id}`).value = '— Standort —';
-  document.getElementById(`ksel-${id}`).style.display = 'block';
-  document.getElementById(`kcust-${id}`).style.display = 'none';
-  document.getElementById(`kback-${id}`).style.display = 'none';
-  updateSummary();
-}
-
-function setNow(inputId) {
-  const now = new Date();
-  const el = document.getElementById(inputId);
-  if (el) { el.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`; colorTime(el); }
-}
-
-function addFoto(rId, input) {
-  if (!input.files[0]) return;
-  const url = URL.createObjectURL(input.files[0]);
-  const img = document.createElement('img');
-  img.src = url; img.className = 'foto-thumb'; img.onclick = ()=>window.open(url,'_blank');
-  document.getElementById(`fr-${rId}`).appendChild(img);
-}
-
-function colorTime(input) {
-  const val = input.value; if (!val) return;
-  const h = parseInt(val.split(':')[0]);
-  input.classList.remove('t-night','t-day','t-eve');
-  if (h >= 6 && h < 17) input.classList.add('t-day');
-  else if (h >= 17 && h < 22) input.classList.add('t-eve');
-  else input.classList.add('t-night');
-}
-
-function updateSummary() {
-  const rows = document.querySelectorAll('.proto-row');
-  let kC=0, vC=0;
-  rows.forEach(row => {
-    const sel = row.querySelector('select');
-    const hasKunde = sel && sel.value !== '— Standort —';
-    let total = 0;
-    row.querySelectorAll('.nc-num').forEach(n => { total += parseInt(n.textContent)||0; });
-    vC += total; if (hasKunde) kC++;
-    const hasNotiz = row.querySelectorAll('.nc-num').length > 0;
-    row.classList.remove('row-ok','row-warn','row-empty');
-    if (!hasKunde) row.classList.add('row-empty');
-    else if (hasNotiz && total > 0) row.classList.add('row-warn');
-    else row.classList.add('row-ok');
-  });
-  document.getElementById('chipK').textContent = kC + ' Kunden';
-  document.getElementById('chipV').textContent = vC + ' Vorfälle';
-  document.getElementById('chipR').textContent = rows.length + ' Zeilen';
-  const rc = document.getElementById('rowCount');
-  if (rc) rc.textContent = rows.length + ' Zeilen';
-  saveData();
-}
-
-function saveData() {
-  try {
-    const rows = document.querySelectorAll('.proto-row');
-    const data = {
-      day: document.getElementById('daySelect').value,
-      date: document.getElementById('dateInput').value,
-      protokollNr: document.getElementById('protokollNr')?.value || '',
-      mitarbeiter: document.getElementById('mitarbeiterName')?.value || '',
-      status: statusOk, rows: []
-    };
-    rows.forEach(row => {
-      const id = row.id.replace('row-','');
-      const ksel = document.getElementById(`ksel-${id}`);
-      const kcust = document.getElementById(`kcust-${id}`);
-      const bd = document.getElementById(`bd-${id}`);
-      const ed = document.getElementById(`ed-${id}`);
-      const ni = document.getElementById(`ni-${id}`);
-      const isCustom = kcust && kcust.style.display !== 'none';
-      const kunde = isCustom ? kcust.value : (ksel ? ksel.value : '— Standort —');
-      const notizen = [];
-      if (ni) { ni.querySelectorAll('.notiz-item').forEach(item => { const s=item.querySelector('.notiz-select'); const n=item.querySelector('.nc-num'); const t=item.nextElementSibling; notizen.push({ev:s?s.value:'',c:n?parseInt(n.textContent)||0:0,ft:(t&&t.tagName==='TEXTAREA')?t.value:''}); }); }
-      data.rows.push({ k: kunde, b: bd?bd.value:'00:00', e: ed?ed.value:'00:00', n: notizen });
-    });
-    localStorage.setItem('denis_protokoll', JSON.stringify(data));
-  } catch(e) {}
-}
-
-function loadData() {
-  try {
-    const saved = localStorage.getItem('denis_protokoll');
-    if (!saved) return false;
-    const data = JSON.parse(saved);
-    if (data.day) document.getElementById('daySelect').value = data.day;
-    if (data.date) document.getElementById('dateInput').value = data.date;
-    if (data.protokollNr) document.getElementById('protokollNr').value = data.protokollNr;
-    if (data.mitarbeiter) document.getElementById('mitarbeiterName').value = data.mitarbeiter;
-    if (data.status === false) toggleStatus();
-    if (data.rows && data.rows.length) { data.rows.forEach(r => addRow(r)); return true; }
-  } catch(e) {}
-  return false;
-}
-
-function resetForm() {
-  if (!confirm('Alle Einträge zurücksetzen?')) return;
-  localStorage.removeItem('denis_protokoll');
-  document.getElementById('rowsWrap').innerHTML = '';
-  rowId = 0;
-  Object.keys(nCounts).forEach(k=>delete nCounts[k]);
-  INIT.forEach(d=>addRow(d));
-  const pNr = document.getElementById('protokollNr');
-  if (pNr) pNr.value = generateProtoNr(true);
-}
-
-function updateClock() {
-  const now = new Date();
-  const clock = document.getElementById('liveClock');
-  if (clock) clock.textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-  const shiftStart=19*60+45, shiftEnd=7*60, shiftTotal=(24*60-shiftStart)+shiftEnd;
-  const nowMins=now.getHours()*60+now.getMinutes();
-  let elapsed = nowMins>=shiftStart ? nowMins-shiftStart : nowMins<=shiftEnd ? (24*60-shiftStart)+nowMins : 0;
-  const pct=Math.min(100,Math.round((elapsed/shiftTotal)*100));
-  const fill=document.getElementById('progressFill'); const pctEl=document.getElementById('progressPct');
-  if (fill) fill.style.width=pct+'%'; if (pctEl) pctEl.textContent=pct+'%';
-}
-
-document.addEventListener('input', saveData);
-document.addEventListener('change', saveData);
-updateClock();
-setInterval(updateClock, 1000);
-
-const loaded = loadData();
-if (!loaded) {
-  INIT.forEach(d=>addRow(d));
-  const pNr = document.getElementById('protokollNr');
-  if (pNr && !pNr.value) pNr.value = generateProtoNr(false);
-}
-document.querySelectorAll('.time-input-direct').forEach(colorTime);
+    function addRow() {
+        let table = document.getElementById("protocolTable").getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow();
+        newRow.innerHTML = `<td><input type="time"></td><td><input type="text" placeholder="Ort"></td><td><select><option value="Kontrolle">Kontrolle</option><option value="Rundgang">Rundgang</option><option value="Vorkommnis">Vorkommnis</option></select></td>`;
+    }
 </script>
 </body>
 </html>
